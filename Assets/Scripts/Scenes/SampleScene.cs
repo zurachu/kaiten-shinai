@@ -20,6 +20,7 @@ public class SampleScene : MonoBehaviour
     private bool isStarted;
     private int score;
     private float speed;
+    private DG.Tweening.Core.TweenerCore<float, float, DG.Tweening.Plugins.Options.FloatOptions> speedTweener;
 
     private async void Start()
     {
@@ -42,7 +43,7 @@ public class SampleScene : MonoBehaviour
         isStarted = true;
 
         SEManager.Instance.Play(SEPath.WHISTLE);
-        DOTween.To(() => speed, (_value) => speed = _value, 1440, 120).From(180).SetEase(Ease.Linear);
+        speedTweener = DOTween.To(() => speed, (_value) => speed = _value, 1440, 120).From(180).SetEase(Ease.Linear);
     }
 
     private void Update()
@@ -88,6 +89,7 @@ public class SampleScene : MonoBehaviour
 
     private async void GameOver()
     {
+        speedTweener.Kill();
         await PlayFabLeaderboardUtility.UpdatePlayerStatisticAsync(statisticName, score);
         await UniTask.Delay(2000);
         UIUtility.TrySetActive(gameOverCanvasGroup.gameObject, true);
