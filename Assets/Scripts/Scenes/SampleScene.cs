@@ -59,22 +59,23 @@ public class SampleScene : MonoBehaviour
 
         if (normalized < 0 && 0 <= eulerAngles.y)
         {
-            if (!unityChanController.IsDown)
+            if (unityChanController.IsJumping)
             {
-                if (unityChanController.IsJumping)
-                {
-                    SetScore(score + 1);
-                    SEManager.Instance.Play(SEPath.KIN);
-                }
-                else
+                SetScore(score + 1);
+                SEManager.Instance.Play(SEPath.KIN);
+            }
+            else
+            {
+                if (!unityChanController.IsDown)
                 {
                     GameOver();
                 }
-            }
 
-            if (!unityChanController.IsJumping && !gameOverCanvasGroup.isActiveAndEnabled)
-            {
-                SEManager.Instance.Play(SEPath.BASI);
+                if (!gameOverCanvasGroup.isActiveAndEnabled)
+                {
+                    unityChanController.Down();
+                    SEManager.Instance.Play(SEPath.BASI);
+                }
             }
         }
     }
@@ -87,8 +88,6 @@ public class SampleScene : MonoBehaviour
 
     private async void GameOver()
     {
-        unityChanController.Down();
-
         await PlayFabLeaderboardUtility.UpdatePlayerStatisticAsync(statisticName, score);
         await UniTask.Delay(2000);
         UIUtility.TrySetActive(gameOverCanvasGroup.gameObject, true);

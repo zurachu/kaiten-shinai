@@ -744,7 +744,7 @@ MonoBehaviour:
   targetIsSelf: 1
   targetGO: {fileID: 0}
   tweenTargetIsTargetGO: 1
-  delay: 0.333
+  delay: 0
   duration: 0.5
   easeType: 15
   easeCurve:

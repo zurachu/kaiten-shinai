@@ -24,7 +24,7 @@ public class UnityChanController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            bodyAnimator.Play("JumpToTop");
+            bodyAnimator.Play("JumpToTop", 0, 0.35f);
         }
 
         if (Input.GetMouseButtonUp(0))
@@ -48,8 +48,15 @@ public class UnityChanController : MonoBehaviour
 
     public void Down()
     {
-        bodyAnimator.Play("GoDown");
-        downAnimation.DORestart();
-        IsDown = true;
+        if (IsDown)
+        {
+            bodyAnimator.Play("GoDown", 0, 0.25f);
+        }
+        else
+        {
+            bodyAnimator.Play("GoDown", 0, 0.125f);
+            downAnimation.DORestart();
+            IsDown = true;
+        }
     }
 }
