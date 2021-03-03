@@ -10,6 +10,7 @@ public class SampleScene : MonoBehaviour
     [SerializeField] Transform rotator;
     [SerializeField] UnityChanController unityChanController;
     [SerializeField] Text scoreText;
+    [SerializeField] Text speedText;
     [SerializeField] CanvasGroup titleCanvasGroup;
     [SerializeField] CanvasGroup gameOverCanvasGroup;
     [SerializeField] CanvasGroup gameOverButtonCanvasGroup;
@@ -34,6 +35,7 @@ public class SampleScene : MonoBehaviour
 
         SetScore(0);
         UIUtility.TrySetActive(scoreText, false);
+        UIUtility.TrySetActive(speedText, false);
         UIUtility.TrySetActive(titleCanvasGroup.gameObject, true);
         UIUtility.TrySetActive(gameOverCanvasGroup.gameObject, false);
 
@@ -48,6 +50,13 @@ public class SampleScene : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            UIUtility.TrySetActive(speedText, !speedText.IsActive());
+        }
+
+        UIUtility.TrySetText(speedText, $"{(int)speed} deg/s");
+
         if (!isStarted)
         {
             return;
