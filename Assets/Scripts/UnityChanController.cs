@@ -6,6 +6,7 @@ public class UnityChanController : MonoBehaviour
     [SerializeField] Animator bodyAnimator;
     [SerializeField] DOTweenAnimation downAnimation;
 
+    public bool IsStarted { get; set; }
     public bool IsDown { get; private set; }
     public bool IsJumping { get; private set; }
 
@@ -17,7 +18,7 @@ public class UnityChanController : MonoBehaviour
 
     private void Update()
     {
-        if (IsDown)
+        if (!IsStarted || IsDown)
         {
             return;
         }

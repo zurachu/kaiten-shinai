@@ -15,6 +15,7 @@ public class SampleScene : MonoBehaviour
     [SerializeField] CanvasGroup gameOverCanvasGroup;
     [SerializeField] CanvasGroup gameOverButtonCanvasGroup;
     [SerializeField] PlayFabLeaderboardScrollView leaderboardScrollView;
+    [SerializeField] LicenseView licenseViewPrefab;
 
     private static readonly string statisticName = "max";
 
@@ -39,10 +40,10 @@ public class SampleScene : MonoBehaviour
         UIUtility.TrySetActive(titleCanvasGroup.gameObject, true);
         UIUtility.TrySetActive(gameOverCanvasGroup.gameObject, false);
 
-        await UniTask.WaitUntil(() => Input.GetMouseButtonDown(0));
+        await UniTask.WaitUntil(() => isStarted);
         UIUtility.TrySetActive(scoreText, true);
         UIUtility.TrySetActive(titleCanvasGroup.gameObject, false);
-        isStarted = true;
+        unityChanController.IsStarted = true;
 
         SEManager.Instance.Play(SEPath.WHISTLE);
         speedTweener = DOTween.To(() => speed, (_value) => speed = _value, 1440, 120).From(180).SetEase(Ease.Linear);
@@ -105,6 +106,18 @@ public class SampleScene : MonoBehaviour
         gameOverButtonCanvasGroup.interactable = false;
         await leaderboardScrollView.Initialize(statisticName, 30, score);
         gameOverButtonCanvasGroup.interactable = true;
+    }
+
+    public void OnClickStart()
+    {
+        isStarted = true;
+    }
+
+    public void OnClickLicense()
+    {
+        CommonAudioPlayer.PlayButtonClick();
+
+        Instantiate(licenseViewPrefab, titleCanvasGroup.transform);
     }
 
     public void OnClickTweet()
