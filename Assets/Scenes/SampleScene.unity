@@ -1975,7 +1975,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u77ED\u304F\u30AF\u30EA\u30C3\u30AF\u3067\u77ED\u304F\u30B8\u30E3\u30F3\u30D7\u3001\u9577\u304F\u30AF\u30EA\u30C3\u30AF\u3067\u9577\u304F\u30B8\u30E3\u30F3\u30D7"
+  m_Text: "\u77ED\u304F\u30BF\u30C3\u30D7\u3067\u77ED\u304F\u30B8\u30E3\u30F3\u30D7\u3001\u9577\u304F\u30BF\u30C3\u30D7\u3067\u9577\u304F\u30B8\u30E3\u30F3\u30D7"
 --- !u!222 &1256850397
 CanvasRenderer:
   m_ObjectHideFlags: 0
