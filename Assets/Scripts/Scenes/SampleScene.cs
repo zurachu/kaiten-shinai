@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -16,8 +17,6 @@ public class SampleScene : MonoBehaviour
     [SerializeField] CanvasGroup gameOverButtonCanvasGroup;
     [SerializeField] PlayFabLeaderboardScrollView leaderboardScrollView;
     [SerializeField] LicenseView licenseViewPrefab;
-
-    private static readonly string statisticName = "max";
 
     private bool isStarted;
     private int score;
@@ -100,11 +99,12 @@ public class SampleScene : MonoBehaviour
     private async void GameOver()
     {
         speedTweener.Kill();
+        var statisticName = TitleConstData.LeaderboardStatisticName;
         await PlayFabLeaderboardUtility.UpdatePlayerStatisticAsync(statisticName, score);
         await UniTask.Delay(2000);
         UIUtility.TrySetActive(gameOverCanvasGroup.gameObject, true);
         gameOverButtonCanvasGroup.interactable = false;
-        await leaderboardScrollView.Initialize(statisticName, 30, score);
+        await leaderboardScrollView.Initialize(statisticName, TitleConstData.LeaderboardEntryCount, score);
         gameOverButtonCanvasGroup.interactable = true;
     }
 
@@ -125,7 +125,11 @@ public class SampleScene : MonoBehaviour
         CommonAudioPlayer.PlayButtonClick();
 
         var message = $"ユニティちゃん体当たりチャレンジ☆回転竹刀を{score}回避けたよ！";
-        naichilab.UnityRoomTweet.Tweet("kaiten-shinai", message, "unityroom", "unity1week");
+#if UNITY_WEBGL
+        naichilab.UnityRoomTweet.Tweet(TitleConstData.UnityRoomGameId, message, "unityroom", "unity1week");
+#else
+        TweetWithoutUnityRoom(message);
+#endif
     }
 
     public void OnClickRetry()
@@ -134,5 +138,11 @@ public class SampleScene : MonoBehaviour
 
         var activeScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(activeScene.name);
+    }
+
+    private void TweetWithoutUnityRoom(string message)
+    {
+        var messageWithGooglePlayStoreUrl = $"{message}\n{TitleConstData.GooglePlayStoreUrl}";
+        Application.OpenURL("http://twitter.com/intent/tweet?text=" + UnityWebRequest.EscapeURL(messageWithGooglePlayStoreUrl));
     }
 }

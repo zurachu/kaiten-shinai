@@ -9,6 +9,7 @@ public class InitialScene : MonoBehaviour
         Debug.unityLogger.logEnabled = false;
 #endif
         await PlayFabLoginManagerService.Instance.LoginAsyncWithRetry(1000);
+        await PlayFabTitleConstDataManagerService.Instance.GetDataAsyncWithRetry(1000);
         SceneManager.LoadScene("SampleScene");
     }
 }
