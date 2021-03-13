@@ -35,8 +35,9 @@ public class PlayFabLeaderboardUtility
             {
                 return await UpdatePlayerStatisticAsync(statisticName, value);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Debug.Log(e.Message);
                 await UniTask.Delay(retryMs);
             }
         }
@@ -69,8 +70,9 @@ public class PlayFabLeaderboardUtility
             {
                 return await GetLeaderboardAsync(statisticName, maxResultsCount);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Debug.Log(e.Message);
                 await UniTask.Delay(retryMs);
             }
         }

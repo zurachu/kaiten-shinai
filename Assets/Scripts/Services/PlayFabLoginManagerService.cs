@@ -66,8 +66,9 @@ public class PlayFabLoginManagerService
             {
                 return await TryLoginAsync();
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Debug.Log(e.Message);
                 await UniTask.Delay(retryMs);
             }
         }

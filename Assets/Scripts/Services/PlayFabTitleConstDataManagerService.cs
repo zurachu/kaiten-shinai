@@ -47,8 +47,9 @@ public class PlayFabTitleConstDataManagerService
             {
                 return await TryGetDataAsync();
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Debug.Log(e.Message);
                 await UniTask.Delay(retryMs);
             }
         }
