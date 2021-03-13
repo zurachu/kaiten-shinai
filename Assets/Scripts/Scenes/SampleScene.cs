@@ -120,6 +120,13 @@ public class SampleScene : MonoBehaviour
         Instantiate(licenseViewPrefab, titleCanvasGroup.transform);
     }
 
+    public void OnClickPrivacyPolicy()
+    {
+        CommonAudioPlayer.PlayButtonClick();
+
+        WebUtility.OpenURL(TitleConstData.PrivacyPolicyUrl);
+    }
+
     public void OnClickTweet()
     {
         CommonAudioPlayer.PlayButtonClick();
