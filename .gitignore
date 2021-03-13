@@ -58,9 +58,17 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
-PlayFabEditorExtensions*
-PlayFabSDK*
+Assets/PlayFabEditorExtensions*
+Assets/PlayFabSDK*
+Assets/GooglePlayGames*
+Assets/ExternalDependencyManager*
 Assets/AudioManager_KanKikuchi/Resources/SE/*
 Assets/Plugins/Demigiant*
+Assets/Plugins/Android/*
+ProjectSettings/AndroidResolverDependencies.xml
+ProjectSettings/GooglePlayGameSettings.txt
+ProjectSettings/GvhProjectSettings.xml
+
 WebGL*
-Recordings
+Recordings*
+GooglePlayStore*

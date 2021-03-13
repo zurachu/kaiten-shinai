@@ -3,6 +3,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using PlayFab;
 using PlayFab.ClientModels;
+using GooglePlayGames;
 
 public class PlayFabLoginManagerService
 {
@@ -37,7 +38,20 @@ public class PlayFabLoginManagerService
         }
 
 #if !UNITY_EDITOR && UNITY_ANDROID
-        result = await TryLoginAndroidAsync();
+        if (!GooglePlayGameLoginManagerService.Instance.LoggedIn)
+        {
+            GooglePlayGameLoginManagerService.Instance.Initialize();
+            await GooglePlayGameLoginManagerService.Instance.TryLoginAsync();
+        }
+
+        if (GooglePlayGameLoginManagerService.Instance.LoggedIn)
+        {
+            result = await TryLoginWithGoogleAccountAsync();
+        }
+        else
+        {
+            result = await TryLoginWithAndroidDeviceIdAsync();
+        }
 #else
         result = await TryLoginDefaultAsync();
 #endif
@@ -59,7 +73,26 @@ public class PlayFabLoginManagerService
         }
     }
 
-    private UniTask<LoginResult> TryLoginAndroidAsync()
+    private UniTask<LoginResult> TryLoginWithGoogleAccountAsync()
+    {
+        var serverAuthCode = PlayGamesPlatform.Instance.GetServerAuthCode();
+
+        Debug.Log("Server Auth Code: " + serverAuthCode);
+
+        var request = new LoginWithGoogleAccountRequest
+        {
+            ServerAuthCode = serverAuthCode,
+            CreateAccount = true
+        };
+
+        var source = new UniTaskCompletionSource<LoginResult>();
+        Action<LoginResult> resultCallback = (_result) => source.TrySetResult(_result);
+        Action<PlayFabError> errorCallback = (_error) => source.TrySetException(new Exception(_error.GenerateErrorReport()));
+        PlayFabClientAPI.LoginWithGoogleAccount(request, resultCallback, errorCallback);
+        return source.Task;
+    }
+
+    private UniTask<LoginResult> TryLoginWithAndroidDeviceIdAsync()
     {
         var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
         var currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");

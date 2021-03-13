@@ -2,8 +2,11 @@
 ユニティちゃん☆回転竹刀チャレンジ
 
 ## Additional requirement
-### PlayFab SDK
+### PlayFab Unity SDK
 - https://docs.microsoft.com/ja-jp/gaming/playfab/sdks/unity3d/
+
+### Google Play Games plugin for Unity
+- https://github.com/playgameservices/play-games-plugin-for-unity
 
 ### DOTween Pro
 - https://assetstore.unity.com/packages/tools/visual-scripting/dotween-pro-32416
