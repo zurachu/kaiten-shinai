@@ -17,6 +17,7 @@ public class SampleScene : MonoBehaviour
     [SerializeField] CanvasGroup gameOverButtonCanvasGroup;
     [SerializeField] PlayFabLeaderboardScrollView leaderboardScrollView;
     [SerializeField] LicenseView licenseViewPrefab;
+    [SerializeField] Button achivementButton;
 
     private bool isStarted;
     private int score;
@@ -38,6 +39,7 @@ public class SampleScene : MonoBehaviour
         UIUtility.TrySetActive(speedText, false);
         UIUtility.TrySetActive(titleCanvasGroup.gameObject, true);
         UIUtility.TrySetActive(gameOverCanvasGroup.gameObject, false);
+        UIUtility.TrySetActive(achivementButton, Social.localUser.authenticated);
 
         await UniTask.WaitUntil(() => isStarted);
         UIUtility.TrySetActive(scoreText, true);
@@ -102,6 +104,7 @@ public class SampleScene : MonoBehaviour
         var statisticName = TitleConstData.LeaderboardStatisticName;
         await PlayFabLeaderboardUtility.UpdatePlayerStatisticAsync(statisticName, score);
         await UniTask.Delay(2000);
+        Achievement.Report(score);
         UIUtility.TrySetActive(gameOverCanvasGroup.gameObject, true);
         gameOverButtonCanvasGroup.interactable = false;
         await leaderboardScrollView.Initialize(statisticName, TitleConstData.LeaderboardEntryCount, score);
@@ -125,6 +128,13 @@ public class SampleScene : MonoBehaviour
         CommonAudioPlayer.PlayButtonClick();
 
         WebUtility.OpenURL(TitleConstData.PrivacyPolicyUrl);
+    }
+
+    public void OnClickAchievement()
+    {
+        CommonAudioPlayer.PlayButtonClick();
+
+        Social.ShowAchievementsUI();
     }
 
     public void OnClickTweet()

@@ -30,7 +30,9 @@ public class GooglePlayGameLoginManagerService
             .Build();
 
         PlayGamesPlatform.InitializeInstance(config);
+#if UNITY_EDITOR
         PlayGamesPlatform.DebugLogEnabled = true;
+#endif
         PlayGamesPlatform.Activate();
     }
 
