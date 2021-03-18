@@ -17,6 +17,7 @@ public class SampleScene : MonoBehaviour
     [SerializeField] CanvasGroup gameOverButtonCanvasGroup;
     [SerializeField] PlayFabLeaderboardScrollView leaderboardScrollView;
     [SerializeField] LicenseView licenseViewPrefab;
+    [SerializeField] GameObject loadingViewPrefab;
     [SerializeField] Button achivementButton;
 
     private bool isStarted;
@@ -26,12 +27,6 @@ public class SampleScene : MonoBehaviour
 
     private async void Start()
     {
-        if (!PlayFabLoginManagerService.Instance.LoggedIn)
-        {
-            SceneManager.LoadScene("InitialScene");
-            return;
-        }
-
         isStarted = false;
 
         SetScore(0);
@@ -39,6 +34,9 @@ public class SampleScene : MonoBehaviour
         UIUtility.TrySetActive(speedText, false);
         UIUtility.TrySetActive(titleCanvasGroup.gameObject, true);
         UIUtility.TrySetActive(gameOverCanvasGroup.gameObject, false);
+        UIUtility.TrySetActive(achivementButton, false);
+
+        await Login();
         UIUtility.TrySetActive(achivementButton, Social.localUser.authenticated);
 
         await UniTask.WaitUntil(() => isStarted);
@@ -155,6 +153,23 @@ public class SampleScene : MonoBehaviour
 
         var activeScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(activeScene.name);
+    }
+
+    private async UniTask Login()
+    {
+        if (PlayFabLoginManagerService.Instance.LoggedIn)
+        {
+            return;
+        }
+
+        var loadingView = Instantiate(loadingViewPrefab, titleCanvasGroup.transform);
+#if !UNITY_EDITOR && UNITY_ANDROID
+        GooglePlayGameLoginManagerService.Instance.Initialize();
+        await GooglePlayGameLoginManagerService.Instance.TryLoginAsync();
+#endif
+        await PlayFabLoginManagerService.Instance.LoginAsyncWithRetry(1000);
+
+        Destroy(loadingView.gameObject);
     }
 
     private void TweetWithoutUnityRoom(string message)

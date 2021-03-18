@@ -1285,6 +1285,8 @@ MonoBehaviour:
   leaderboardScrollView: {fileID: 1050656901}
   licenseViewPrefab: {fileID: 3616532500179000104, guid: 3ad14e191552f463b8f6b55985e40b3c,
     type: 3}
+  loadingViewPrefab: {fileID: 3914464539630533935, guid: b73496a328dfd455ab84dd492e2eedde,
+    type: 3}
   achivementButton: {fileID: 642495581}
 --- !u!1 &858828761
 GameObject:

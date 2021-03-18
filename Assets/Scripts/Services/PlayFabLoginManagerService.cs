@@ -28,6 +28,11 @@ public class PlayFabLoginManagerService
     public Dictionary<string, string> TitleData => result?.InfoResultPayload?.TitleData;
 
     private static readonly string GuidKey = "Guid";
+    private static readonly GetPlayerCombinedInfoRequestParams infoRequestParams =
+        new GetPlayerCombinedInfoRequestParams
+        {
+            GetTitleData = true
+        };
 
     private LoginResult result;
 
@@ -39,28 +44,17 @@ public class PlayFabLoginManagerService
             throw new Exception("PlayFabSettings.TitleId is not set");
         }
 
-        var infoRequestParams = new GetPlayerCombinedInfoRequestParams
-        {
-            GetTitleData = true
-        };
-
 #if !UNITY_EDITOR && UNITY_ANDROID
-        if (!GooglePlayGameLoginManagerService.Instance.LoggedIn)
-        {
-            GooglePlayGameLoginManagerService.Instance.Initialize();
-            await GooglePlayGameLoginManagerService.Instance.TryLoginAsync();
-        }
-
         if (GooglePlayGameLoginManagerService.Instance.LoggedIn)
         {
-            result = await TryLoginWithGoogleAccountAsync(infoRequestParams);
+            result = await TryLoginWithGoogleAccountAsync();
         }
         else
         {
-            result = await TryLoginWithAndroidDeviceIdAsync(infoRequestParams);
+            result = await TryLoginWithAndroidDeviceIdAsync();
         }
 #else
-        result = await TryLoginDefaultAsync(infoRequestParams);
+        result = await TryLoginDefaultAsync();
 #endif
         Debug.Log(result.PlayFabId);
         Debug.Log(StringDictionaryUtility.Dump(result.InfoResultPayload?.TitleData));
@@ -84,7 +78,7 @@ public class PlayFabLoginManagerService
         }
     }
 
-    private UniTask<LoginResult> TryLoginWithGoogleAccountAsync(GetPlayerCombinedInfoRequestParams infoRequestParams)
+    private UniTask<LoginResult> TryLoginWithGoogleAccountAsync()
     {
         var serverAuthCode = PlayGamesPlatform.Instance.GetServerAuthCode();
 
@@ -104,19 +98,11 @@ public class PlayFabLoginManagerService
         return source.Task;
     }
 
-    private UniTask<LoginResult> TryLoginWithAndroidDeviceIdAsync(GetPlayerCombinedInfoRequestParams infoRequestParams)
+    private UniTask<LoginResult> TryLoginWithAndroidDeviceIdAsync()
     {
-        var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-        var currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-        var contentResolver = currentActivity.Call<AndroidJavaObject>("getContentResolver");
-        var secure = new AndroidJavaClass("android.provider.Settings$Secure");
-        var androidId = secure.CallStatic<string>("getString", contentResolver, "android_id");
-
-        Debug.Log(androidId);
-
         var request = new LoginWithAndroidDeviceIDRequest
         {
-            AndroidDeviceId = androidId,
+            AndroidDeviceId = GetAndroidId(),
             CreateAccount = true,
             InfoRequestParameters = infoRequestParams
         };
@@ -128,7 +114,36 @@ public class PlayFabLoginManagerService
         return source.Task;
     }
 
-    private UniTask<LoginResult> TryLoginDefaultAsync(GetPlayerCombinedInfoRequestParams infoRequestParams)
+    private string GetAndroidId()
+    {
+        var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        var currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+        var contentResolver = currentActivity.Call<AndroidJavaObject>("getContentResolver");
+        var secure = new AndroidJavaClass("android.provider.Settings$Secure");
+        var androidId = secure.CallStatic<string>("getString", contentResolver, "android_id");
+
+        Debug.Log(androidId);
+
+        return androidId;
+    }
+
+    private UniTask<LoginResult> TryLoginDefaultAsync()
+    {
+        var request = new LoginWithCustomIDRequest
+        {
+            CustomId = GetCustomId(),
+            CreateAccount = true,
+            InfoRequestParameters = infoRequestParams
+        };
+
+        var source = new UniTaskCompletionSource<LoginResult>();
+        Action<LoginResult> resultCallback = (_result) => source.TrySetResult(_result);
+        Action<PlayFabError> errorCallback = (_error) => source.TrySetException(new Exception(_error.GenerateErrorReport()));
+        PlayFabClientAPI.LoginWithCustomID(request, resultCallback, errorCallback);
+        return source.Task;
+    }
+
+    private string GetCustomId()
     {
         // WebGL では端末 ID 的なものがなく、スコアランキング程度で Facebook 等連携してもらうのもユーザに手間をかけるので、
         // 簡易な端末 ID もどきとして。
@@ -142,17 +157,6 @@ public class PlayFabLoginManagerService
 
         Debug.Log(guid);
 
-        var request = new LoginWithCustomIDRequest
-        {
-            CustomId = guid,
-            CreateAccount = true,
-            InfoRequestParameters = infoRequestParams
-        };
-
-        var source = new UniTaskCompletionSource<LoginResult>();
-        Action<LoginResult> resultCallback = (_result) => source.TrySetResult(_result);
-        Action<PlayFabError> errorCallback = (_error) => source.TrySetException(new Exception(_error.GenerateErrorReport()));
-        PlayFabClientAPI.LoginWithCustomID(request, resultCallback, errorCallback);
-        return source.Task;
+        return guid;
     }
 }
