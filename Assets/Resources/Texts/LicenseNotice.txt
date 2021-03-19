@@ -117,4 +117,12 @@ limitations under the License.
 
 © Unity Technologies Japan/UCL
 
+■ Train One-Regular
+
+Copyright 2020 The Train Project Authors (https://github.com/fontworks-fonts/Train)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+https://scripts.sil.org/OFL
+
 ■ 効果音素材：ポケットサウンド – https://pocket-se.info/
