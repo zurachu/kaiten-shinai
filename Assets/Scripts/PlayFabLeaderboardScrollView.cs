@@ -23,7 +23,7 @@ public class PlayFabLeaderboardScrollView : MonoBehaviour
         var myPlayerLeaderboardEntry = playerLeaderboardEntries.Find(_entry => _entry.PlayFabId == PlayFabLoginManagerService.Instance.PlayFabId);
         if (myPlayerLeaderboardEntry != null && string.IsNullOrEmpty(myPlayerLeaderboardEntry.DisplayName))
         {
-            ShowNameEntryView(myPlayerLeaderboardEntry);
+            await ShowNameEntryView(myPlayerLeaderboardEntry);
         }
     }
 
@@ -37,7 +37,10 @@ public class PlayFabLeaderboardScrollView : MonoBehaviour
             var isMySelf = entry.PlayFabId == PlayFabLoginManagerService.Instance.PlayFabId;
             var isHighlighted = isMySelf && entry.StatValue == yourScore;
             var entryItem = Instantiate(leaderboardEntryItemPrefab, content.transform);
-            entryItem.Initialize(entry, isHighlighted, ShowNameEntryView);
+            entryItem.Initialize(entry, isHighlighted, (_myPlayerLeaderboardEntry) =>
+            {
+                _ = ShowNameEntryView(_myPlayerLeaderboardEntry);
+            });
             leaderboardEntryItems.Add(entryItem);
         }
 
@@ -52,8 +55,11 @@ public class PlayFabLeaderboardScrollView : MonoBehaviour
         }
     }
 
-    private void ShowNameEntryView(PlayerLeaderboardEntry myPlayerLeaderboardEntry)
+    private async UniTask ShowNameEntryView(PlayerLeaderboardEntry myPlayerLeaderboardEntry)
     {
+        var previousBackButtonLeavesApp = Input.backButtonLeavesApp;
+        Input.backButtonLeavesApp = false;
+
         var nameEntryView = Instantiate(nameEntryViewPrefab, transform);
         nameEntryView.Initialize(myPlayerLeaderboardEntry.DisplayName,
             (_newName) =>
@@ -67,5 +73,10 @@ public class PlayFabLeaderboardScrollView : MonoBehaviour
             {
                 Destroy(nameEntryView.gameObject);
             });
+
+        await UniTask.WaitUntil(() => nameEntryView == null);
+
+        await UniTask.DelayFrame(1);
+        Input.backButtonLeavesApp = previousBackButtonLeavesApp;
     }
 }

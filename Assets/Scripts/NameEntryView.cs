@@ -13,6 +13,14 @@ public class NameEntryView : MonoBehaviour
     private Action<string> onSubmit;
     private Action onCancel;
 
+    private void Update()
+    {
+        if (cancelButton.isActiveAndEnabled && Input.GetKeyDown(KeyCode.Escape))
+        {
+            OnClickCancel();
+        }
+    }
+
     public void Initialize(string originalName, Action<string> onSubmit, Action onCancel)
     {
         this.onSubmit = onSubmit;

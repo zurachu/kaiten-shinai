@@ -27,6 +27,8 @@ public class SampleScene : MonoBehaviour
 
     private async void Start()
     {
+        Input.backButtonLeavesApp = true;
+
         isStarted = false;
 
         SetScore(0);
@@ -43,6 +45,7 @@ public class SampleScene : MonoBehaviour
         UIUtility.TrySetActive(scoreText, true);
         UIUtility.TrySetActive(titleCanvasGroup.gameObject, false);
         unityChanController.IsStarted = true;
+        Input.backButtonLeavesApp = false;
 
         SEManager.Instance.Play(SEPath.WHISTLE);
         speedTweener = DOTween.To(() => speed, (_value) => speed = _value, 1440, 120).From(180).SetEase(Ease.Linear);
@@ -107,6 +110,7 @@ public class SampleScene : MonoBehaviour
         gameOverButtonCanvasGroup.interactable = false;
         await leaderboardScrollView.Initialize(statisticName, TitleConstData.LeaderboardEntryCount, score);
         gameOverButtonCanvasGroup.interactable = true;
+        Input.backButtonLeavesApp = true;
     }
 
     public void OnClickStart()
@@ -162,6 +166,9 @@ public class SampleScene : MonoBehaviour
             return;
         }
 
+        var previousBackButtonLeavesApp = Input.backButtonLeavesApp;
+        Input.backButtonLeavesApp = false;
+
         var loadingView = Instantiate(loadingViewPrefab, titleCanvasGroup.transform);
 #if !UNITY_EDITOR && UNITY_ANDROID
         GooglePlayGameLoginManagerService.Instance.Initialize();
@@ -170,6 +177,8 @@ public class SampleScene : MonoBehaviour
         await PlayFabLoginManagerService.Instance.LoginAsyncWithRetry(1000);
 
         Destroy(loadingView.gameObject);
+
+        Input.backButtonLeavesApp = previousBackButtonLeavesApp;
     }
 
     private void TweetWithoutUnityRoom(string message)
