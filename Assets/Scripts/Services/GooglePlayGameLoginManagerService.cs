@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using Cysharp.Threading.Tasks;
+#if UNITY_ANDROID
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
+#endif
 
 public class GooglePlayGameLoginManagerService
 {
@@ -24,6 +26,7 @@ public class GooglePlayGameLoginManagerService
 
     public void Initialize()
     {
+#if UNITY_ANDROID
         PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder()
             .RequestServerAuthCode(false)
             .RequestIdToken()
@@ -34,6 +37,7 @@ public class GooglePlayGameLoginManagerService
         PlayGamesPlatform.DebugLogEnabled = true;
 #endif
         PlayGamesPlatform.Activate();
+#endif
     }
 
     public UniTask<bool> TryLoginAsync()

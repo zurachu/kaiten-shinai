@@ -4,7 +4,9 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using PlayFab;
 using PlayFab.ClientModels;
+#if UNITY_ANDROID
 using GooglePlayGames;
+#endif
 
 public class PlayFabLoginManagerService
 {
@@ -78,6 +80,7 @@ public class PlayFabLoginManagerService
         }
     }
 
+#if UNITY_ANDROID
     private UniTask<LoginResult> TryLoginWithGoogleAccountAsync()
     {
         var serverAuthCode = PlayGamesPlatform.Instance.GetServerAuthCode();
@@ -126,6 +129,7 @@ public class PlayFabLoginManagerService
 
         return androidId;
     }
+#endif
 
     private UniTask<LoginResult> TryLoginDefaultAsync()
     {
