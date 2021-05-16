@@ -171,6 +171,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.zurachu.kaitenshinai
+    iPhone: com.zurachu.kaitenshinai
   buildNumber: {}
   AndroidBundleVersionCode: 20
   AndroidMinSdkVersion: 19
